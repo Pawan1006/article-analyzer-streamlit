@@ -1,3 +1,4 @@
+streamlit
 numpy<2
 pandas
 requests
@@ -6,7 +7,6 @@ nltk
 textblob
 textstat
 openpyxl
-streamlit
 plotly
 scikit-learn
 spacy
@@ -14,8 +14,7 @@ yake
 wordcloud
 reportlab
 kaleido
-rake_nltk
+rake-nltk
 newspaper3k
-lxml[html_clean]
-readability-lxml
 lxml
+readability-lxml
