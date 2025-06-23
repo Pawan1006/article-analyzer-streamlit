@@ -8,7 +8,6 @@ textblob
 textstat
 openpyxl
 plotly
-scikit-learn
 spacy
 yake
 wordcloud
