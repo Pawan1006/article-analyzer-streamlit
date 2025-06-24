@@ -34,12 +34,6 @@ def handle_file_upload():
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-    # 🔄 Add clear cache button here
-    if st.button("🔄 Clear Sample Cache"):
-        st.cache_data.clear()
-        st.success("✅ Sample cache cleared. App will rerun...")
-        st.experimental_rerun()
-
     # 👉 Option to use sample file directly
     use_sample = st.checkbox("✅ Use sample input file", value=False)
     if use_sample:
