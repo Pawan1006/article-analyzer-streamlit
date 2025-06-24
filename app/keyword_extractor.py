@@ -4,12 +4,8 @@ import yake
 from nltk.corpus import stopwords
 from nltk import download
 
-# 🛡 Ensure NLTK stopwords are available
-try:
-    stop_words = set(stopwords.words("english"))
-except LookupError:
-    download("stopwords")
-    stop_words = set(stopwords.words("english"))
+
+stop_words = set(stopwords.words("english"))
 
 # 🧹 Custom stopword sets
 domain_stopwords = {

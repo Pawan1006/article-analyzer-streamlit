@@ -4,10 +4,6 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 from rake_nltk import Rake
 import yake
 import textstat
-import nltk
-
-# 📦 Ensure VADER lexicon is available
-nltk.download("vader_lexicon", quiet=True)
 
 # 🔍 Sentiment Benchmark: TextBlob vs VADER
 def benchmark_sentiments(df, folder="extracted_articles", top_n=5):
