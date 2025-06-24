@@ -15,25 +15,22 @@ from app.pipeline.summary import compute_summary_insights
 
 def export_analysis_to_pdf(df, visual_funcs, output_path="output/analysis_summary.pdf"):
     """
-    Exports a full PDF report containing:
+    Exports a full PDF report with:
     1. Summary insights
-    2. Vertical metrics table
-    3. Charts from visual functions
+    2. Metrics table
+    3. Visualizations (PNG charts from matplotlib or plotly)
 
     Args:
-        df (pd.DataFrame): Resultant DataFrame after analysis.
-        visual_funcs (list): List of (title, function) tuples to generate charts.
-        output_path (str): Output path to save the generated PDF.
-
-    Returns:
-        str: Final PDF path.
+        df (pd.DataFrame): Analyzed results.
+        visual_funcs (list): List of (title, function) returning a figure (matplotlib or plotly).
+        output_path (str): PDF output path.
     """
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     doc = SimpleDocTemplate(output_path, pagesize=landscape(letter))
     styles = getSampleStyleSheet()
     elements = []
 
-    # ======================= 📄 PAGE 1: Summary ==========================
+    # ========== Page 1: Summary ==========
     summary = compute_summary_insights(df)
 
     elements.append(Paragraph("📊 Article Analysis Summary", styles["Title"]))
@@ -52,14 +49,14 @@ def export_analysis_to_pdf(df, visual_funcs, output_path="output/analysis_summar
         elements.append(Paragraph(item, styles["Normal"]))
     elements.append(Spacer(1, 12))
 
-    if summary["top_keywords"]:
+    if summary.get("top_keywords"):
         elements.append(Paragraph("🔑 Top 10 Common Keywords", styles["Heading3"]))
         for kw, freq in summary["top_keywords"]:
             elements.append(Paragraph(f"• {kw} ({freq} times)", styles["Normal"]))
 
     elements.append(PageBreak())
 
-    # ======================= 📄 PAGE 2: Metrics Table (Vertical) ==========================
+    # ========== Page 2: Metrics Table ==========
     df_metric = df.drop(columns=["URL"]).set_index("URL_ID").T.reset_index()
     df_metric.columns = ["Metric"] + df_metric.columns[1:].tolist()
 
@@ -78,21 +75,21 @@ def export_analysis_to_pdf(df, visual_funcs, output_path="output/analysis_summar
     elements.append(table)
     elements.append(PageBreak())
 
-    # ======================= 📄 PAGE 3+: Charts ==========================
+    # ========== Pages 3+: Charts ==========
     for title, fig_func in visual_funcs:
         try:
             print(f"🎯 Generating visual: {title}")
-            fig = fig_func(df)
+            fig = fig_func(df)  # This should return a matplotlib or plotly figure
 
             with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_img:
-                # Save plot to image
+                # 🎯 Save matplotlib or plotly chart to PNG
                 if hasattr(fig, "savefig"):
                     fig.savefig(tmp_img.name, format='png', bbox_inches='tight')
                     plt.close(fig)
                 elif hasattr(fig, "write_image"):
-                    fig.write_image(tmp_img.name)
+                    fig.write_image(tmp_img.name, format="png")
                 else:
-                    raise ValueError("Unsupported figure type")
+                    raise ValueError(f"Unsupported figure type for {title}")
 
                 block = [
                     Paragraph(title, styles["Heading2"]),
@@ -108,7 +105,7 @@ def export_analysis_to_pdf(df, visual_funcs, output_path="output/analysis_summar
             elements.append(Paragraph(f"⚠️ Could not generate '{title}': {e}", styles["Normal"]))
             elements.append(Spacer(1, 12))
 
-    # 🧾 Build final document
+    # 🧾 Build PDF
     doc.build(elements)
     print(f"✅ PDF saved to: {output_path}")
     return output_path
