@@ -34,10 +34,11 @@ def show_download_section(excel_path, df_result):
 
     # ---------------- PDF Generation ----------------
     visuals = [
-        ("📊 Sentiment Distribution", sentiment_distribution),
-        ("🧠 Word Count vs Complexity", word_count_vs_complexity),
-        ("🗣️ Personal Pronouns Barchart", personal_pronouns_barchart)
+        ("📊 Sentiment Distribution", lambda df: sentiment_distribution(df)),
+        ("🧠 Word Count vs Complexity", lambda df: word_count_vs_complexity(df)),
+        ("🗣️ Personal Pronouns Barchart", lambda df: personal_pronouns_barchart(df)),
     ]
+
 
     try:
         with st.spinner("📄 Generating PDF Report..."):
