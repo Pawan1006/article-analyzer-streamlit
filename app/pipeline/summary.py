@@ -17,9 +17,11 @@ def compute_summary_insights(df_result):
     summary = {
         "total_articles": len(df_result),
         "avg_polarity": round(df_result["POLARITY SCORE"].mean(), 3),
-        "positive_articles": (df_result["POLARITY SCORE"] > 0).sum(),
-        "negative_articles": (df_result["POLARITY SCORE"] < 0).sum(),
-        "neutral_articles": (df_result["POLARITY SCORE"] == 0).sum(),
+        "positive_articles": (df_result["POLARITY SCORE"] > 0.1).sum(),
+        "negative_articles": (df_result["POLARITY SCORE"] < -0.1).sum(),
+        "neutral_articles": df_result[
+            (df_result["POLARITY SCORE"] >= -0.1) & (df_result["POLARITY SCORE"] <= 0.1)
+        ].shape[0],
     }
 
     # Collect keywords from each article file
