@@ -60,7 +60,7 @@ def export_analysis_to_pdf(df, visual_funcs, output_path="output/analysis_summar
     elements.append(PageBreak())
 
     # ======================= 📄 PAGE 2: Metrics Table (Vertical) ==========================
-    df_metric = df.set_index("URL_ID").T.reset_index()
+    df_metric = df.drop(columns=["URL"]).set_index("URL_ID").T.reset_index()
     df_metric.columns = ["Metric"] + df_metric.columns[1:].tolist()
 
     table_data = [df_metric.columns.tolist()] + df_metric.values.tolist()
