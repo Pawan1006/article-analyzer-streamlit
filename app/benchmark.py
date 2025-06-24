@@ -5,6 +5,10 @@ from rake_nltk import Rake
 import yake
 import textstat
 
+from .nltk_setup import ensure_nltk_resources
+ensure_nltk_resources()
+
+
 # 🔍 Sentiment Benchmark: TextBlob vs VADER
 def benchmark_sentiments(df, folder="extracted_articles", top_n=5):
     results = []

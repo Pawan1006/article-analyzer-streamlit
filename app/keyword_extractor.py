@@ -2,8 +2,9 @@ import re
 import string
 import yake
 from nltk.corpus import stopwords
-from nltk import download
 
+from .nltk_setup import ensure_nltk_resources
+ensure_nltk_resources()
 
 stop_words = set(stopwords.words("english"))
 

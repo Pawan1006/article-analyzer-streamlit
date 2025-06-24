@@ -5,10 +5,15 @@ import streamlit as st
 from textblob import TextBlob
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
+import nltk
 
 from .utils import load_input_excel, count_syllables
 
-stop_words = set(stopwords.words('english'))
+# 🛡 Ensure required NLTK resources
+from .nltk_setup import ensure_nltk_resources
+
+ensure_nltk_resources()
+stop_words = set(stopwords.words("english"))
 
 # 🔍 Personal pronoun counter
 def count_personal_pronouns(text):
@@ -66,7 +71,7 @@ def analyze_articles(path):
 
             output_data.append([
                 url_id, url, polarity, subjectivity, avg_sentence_len,
-                percent_complex, fog_index, avg_sentence_len,
+                percent_complex, fog_index,
                 complex_word_count, word_count, syll_per_word,
                 pronouns, avg_word_len
             ])
@@ -74,17 +79,16 @@ def analyze_articles(path):
         except Exception as e:
             st.error(f"❌ Failed to analyze article {url_id}: {e}")
 
-    # Convert to DataFrame and save
+    # Save output
     df_out = pd.DataFrame(output_data, columns=[
         "URL_ID", "URL", "POLARITY SCORE", "SUBJECTIVITY SCORE", "AVG SENTENCE LENGTH",
-        "PERCENTAGE OF COMPLEX WORDS", "FOG INDEX", "AVG NUMBER OF WORDS PER SENTENCE",
+        "PERCENTAGE OF COMPLEX WORDS", "FOG INDEX",
         "COMPLEX WORD COUNT", "WORD COUNT", "SYLLABLE PER WORD",
         "PERSONAL PRONOUNS", "AVG WORD LENGTH"
     ])
 
     os.makedirs("output", exist_ok=True)
-    output_path = "output/Output Data Structure.xlsx"
-    df_out.to_excel(output_path, index=False)
+    df_out.to_excel("output/Output Data Structure.xlsx", index=False)
 
     if invalid_rows:
         st.warning(f"⚠️ Skipped {len(invalid_rows)} row(s) due to missing URL_ID or URL.")
