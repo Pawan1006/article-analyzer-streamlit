@@ -7,10 +7,7 @@ import textstat
 import nltk
 
 # 📦 Ensure VADER lexicon is available
-try:
-    nltk.data.find('sentiment/vader_lexicon')
-except LookupError:
-    nltk.download('vader_lexicon', quiet=True)
+nltk.download("vader_lexicon", quiet=True)
 
 # 🔍 Sentiment Benchmark: TextBlob vs VADER
 def benchmark_sentiments(df, folder="extracted_articles", top_n=5):

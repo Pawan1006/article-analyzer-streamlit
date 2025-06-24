@@ -9,10 +9,8 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 
 from .utils import load_input_excel, count_syllables
 
-try:
-    nltk.data.find("tokenizers/punkt")
-except LookupError:
-    nltk.download("punkt", quiet=True)
+nltk.download("punkt", quiet=True)
+nltk.download("stopwords", quiet=True)
 
 
 stop_words = set(stopwords.words('english'))
