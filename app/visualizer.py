@@ -2,6 +2,18 @@ import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
+import os
+import plotly.io as pio
+
+
+def save_plotly_as_png(fig, filename):
+    os.makedirs("charts", exist_ok=True)
+    path = f"charts/{filename}.png"
+    try:
+        fig.write_image(path)
+    except Exception as e:
+        print(f"⚠️ Could not save {filename} as PNG: {e}")
+    return path
 
 
 def wrap_plotly(fig):
@@ -12,7 +24,7 @@ def wrap_plotly(fig):
     return fig
 
 
-def sentiment_distribution(df):
+def sentiment_distribution(df, save=False):
     """
     Displays histogram of polarity scores grouped by sentiment.
     """
@@ -41,10 +53,12 @@ def sentiment_distribution(df):
         yaxis_title="Count",
         font=dict(color="#000000")
     )
+    if save:
+        save_plotly_as_png(fig, "sentiment_distribution")
     return wrap_plotly(fig)
 
 
-def word_count_vs_complexity(df):
+def word_count_vs_complexity(df, save=False):
     """
     Scatter plot showing word count vs % of complex words.
     """
@@ -66,10 +80,12 @@ def word_count_vs_complexity(df):
         yaxis_title="% of Complex Words",
         font=dict(color="#000000")
     )
+    if save:
+        save_plotly_as_png(fig, "word_count_vs_complexity")
     return wrap_plotly(fig)
 
 
-def personal_pronouns_barchart(df):
+def personal_pronouns_barchart(df, save=False):
     """
     Bar chart showing usage of personal pronouns per article.
     """
@@ -100,6 +116,8 @@ def personal_pronouns_barchart(df):
         uniformtext_mode='hide',
         bargap=0.3
     )
+    if save:
+        save_plotly_as_png(fig, "personal_pronouns_barchart")
     return wrap_plotly(fig)
 
 
