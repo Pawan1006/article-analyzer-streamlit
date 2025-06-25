@@ -19,7 +19,7 @@ def save_sentiment_distribution_matplotlib(df, path="charts/sentiment_distributi
     bins = np.linspace(df["POLARITY SCORE"].min(), df["POLARITY SCORE"].max(), 10)
 
     plt.figure(figsize=(8, 5))
-    for sentiment, color in zip(["Positive", "Negative", "Neutral"], ['#2ca02c', '#d62728', '#1f77b4']):
+    for sentiment, color in zip(["Positive", "Negative", "Neutral"], ["#34c834", "#950e0e", '#1f77b4']):
         subset = df[df["SentimentGroup"] == sentiment]
         plt.hist(subset["POLARITY SCORE"], bins=bins, alpha=0.6, label=sentiment, color=color)
 
