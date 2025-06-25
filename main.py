@@ -47,6 +47,6 @@ if sample_path:
         st.markdown("---")
 
         # ---------------- Step 6: Download Processed File ----------------
-        show_download_section("output/Output Data Structure.xlsx", df_result)
+        show_download_section("output/Output Data Structure.xlsx", df_result, sample_path)
 
         st.caption("📍 Built with ❤️ by Pawan | Powered by Streamlit")

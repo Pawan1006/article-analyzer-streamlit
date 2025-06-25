@@ -1,9 +1,0 @@
-You are now ready to start learning the basics with this introduction to Python. Make sure you have Python installed on your system, or use an online version of Python.
-
-Even if you have no prior programming experience, you should be able to get a good start with this Python introduction. We’ll take it slow, but before you know it, you’ll have a solid base-level knowledge of the important topics:
-
-This introduction to Python will not dive into these subjects’ nitty-gritty details but instead touch the surface and introduce you to the basic concepts.
-
-Further on in the tutorial, we’ll take some deep dives into specific subjects:
-
-If you get stuck, do not hesitate to contact me with any questions you might have. Sometimes writing down the question is enough to answer it yourself, but I’m happy to help where I can. Let’s go! Click here to start learning about the REPL.

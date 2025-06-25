@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 from app.visualizer import (
     sentiment_distribution,
     word_count_vs_complexity,
@@ -6,7 +7,7 @@ from app.visualizer import (
 )
 from app.pdf_generator import export_analysis_to_pdf
 
-def show_download_section(excel_path, df_result):
+def show_download_section(excel_path, df_result, sample_path):
     """
     Renders the download section for Excel and PDF output files in the Streamlit app.
     """
@@ -38,7 +39,7 @@ def show_download_section(excel_path, df_result):
                 "🗣️ Personal Pronouns Barchart": "charts/personal_pronouns_barchart.png"
             }
             # Export to PDF and store path in session
-            pdf_path = export_analysis_to_pdf(df_result, charts)
+            pdf_path = export_analysis_to_pdf(df_result, charts, input_path=sample_path)
             st.session_state.pdf_path = pdf_path
     else:
         pdf_path = st.session_state.pdf_path
@@ -48,7 +49,7 @@ def show_download_section(excel_path, df_result):
             st.download_button(
                 label="📄 Download PDF Report",
                 data=f,
-                file_name="Article_Analysis_Report.pdf",
+                file_name=os.path.basename(pdf_path),
                 mime="application/pdf"
             )
 

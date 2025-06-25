@@ -11,7 +11,7 @@ from reportlab.lib.pagesizes import landscape, letter
 from app.pipeline.summary import compute_summary_insights
 
 @st.cache_data
-def export_analysis_to_pdf(df, chart_paths_dict, output_path="output/analysis_summary.pdf"):
+def export_analysis_to_pdf(df, chart_paths_dict, input_path, output_dir="output"):
     """
     Generate a PDF report summarizing article analysis with pre-saved chart images.
 
@@ -23,8 +23,20 @@ def export_analysis_to_pdf(df, chart_paths_dict, output_path="output/analysis_su
     Returns:
         str: Path to generated PDF.
     """
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
     os.makedirs("charts", exist_ok=True)
+
+    filename = os.path.splitext(os.path.basename(input_path))[0]  # → sample_input
+    # Cleanup old PDFs matching pattern *_analysis_summary.pdf
+    for file in os.listdir(output_dir):
+        if file.endswith("_analysis_summary.pdf"):
+            try:
+                os.remove(os.path.join(output_dir, file))
+            except Exception as e:
+                print(f"⚠️ Could not delete {file}: {e}")
+
+    # Save new output path
+    output_path = os.path.join(output_dir, f"{filename}_analysis_summary.pdf")
 
     doc = SimpleDocTemplate(output_path, pagesize=landscape(letter))
     styles = getSampleStyleSheet()
