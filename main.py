@@ -25,6 +25,7 @@ if sample_path:
         st.session_state.get("last_file_path") != sample_path
     ):
         clear_old_charts() # clean old charts
+        st.session_state.pop("pdf_path", None)
         df_result = extract_articles_from_file(sample_path)
         if df_result is not None:
             df_result = analyze_and_cache_results(sample_path, df_result)
