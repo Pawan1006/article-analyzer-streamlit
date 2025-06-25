@@ -2,6 +2,7 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+import numpy as np
 
 
 def ensure_charts_dir():
@@ -14,15 +15,18 @@ def save_sentiment_distribution_matplotlib(df, path="charts/sentiment_distributi
         lambda x: "Positive" if x > 0.1 else "Negative" if x < -0.1 else "Neutral"
     )
 
-    plt.figure(figsize=(8, 5))
-    for sentiment in df["SentimentGroup"].unique():
-        subset = df[df["SentimentGroup"] == sentiment]
-        plt.hist(subset["POLARITY SCORE"], bins=10, alpha=0.6, label=sentiment)
+    # Define common bin edges
+    bins = np.linspace(df["POLARITY SCORE"].min(), df["POLARITY SCORE"].max(), 10)
 
-    plt.title("Sentiment Polarity Distribution")
+    plt.figure(figsize=(8, 5))
+    for sentiment, color in zip(["Positive", "Negative", "Neutral"], ['#2ca02c', '#d62728', '#1f77b4']):
+        subset = df[df["SentimentGroup"] == sentiment]
+        plt.hist(subset["POLARITY SCORE"], bins=bins, alpha=0.6, label=sentiment, color=color)
+
+    plt.title("📊 Sentiment Polarity Distribution")
     plt.xlabel("Polarity Score")
     plt.ylabel("Count")
-    plt.legend(title="SentimentGroup", loc="center left", bbox_to_anchor=(1, 0.5))
+    plt.legend(title="Sentiment", loc="center left", bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
     os.makedirs("charts", exist_ok=True)
     plt.savefig(path)
