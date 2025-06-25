@@ -69,6 +69,9 @@ def personal_pronouns_barchart(df):
     df_clean = df[["URL_ID", "PERSONAL PRONOUNS"]].dropna()
     df_clean["PERSONAL PRONOUNS"] = pd.to_numeric(df_clean["PERSONAL PRONOUNS"], errors="coerce").fillna(0)
 
+    max_y = df_clean["PERSONAL PRONOUNS"].max()
+    y_margin = max_y * 0.15  # Add 15% headroom
+
     fig = px.bar(
         df_clean,
         x="URL_ID",
@@ -81,18 +84,22 @@ def personal_pronouns_barchart(df):
         },
         color_discrete_sequence=["#3f8efc"]
     )
+
     fig.update_traces(
         textposition='outside',
         marker=dict(line=dict(width=1, color='black'))
     )
+
     fig.update_layout(
         template="plotly_white",
         xaxis_title="Article ID",
         yaxis_title="Count of Personal Pronouns",
         uniformtext_minsize=8,
         uniformtext_mode='hide',
-        bargap=0.3
+        bargap=0.3,
+        yaxis=dict(range=[0, max_y + y_margin])  # Add headroom to y-axis
     )
+
     return wrap_plotly(fig)
 
 

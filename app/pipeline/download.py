@@ -47,15 +47,6 @@ def show_download_section(excel_path, df_result, sample_path):
                 "🗣️ Personal Pronouns Barchart": "charts/personal_pronouns_barchart.png"
             }
 
-            # Optional: Show thumbnails for debugging
-            st.markdown("### 🔍 Chart Save Check (Temporary Debug)")
-            for label, path in charts.items():
-                if os.path.exists(path):
-                    st.success(f"✅ Found: {path}")
-                    st.image(Image.open(path), caption=label, use_column_width=True)
-                else:
-                    st.error(f"❌ Missing: {path}")
-
             # Generate PDF
             pdf_path = export_analysis_to_pdf(df_result, charts, input_path=sample_path)
             st.session_state.pdf_path = pdf_path
