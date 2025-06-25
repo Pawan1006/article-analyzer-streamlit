@@ -1,5 +1,20 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import os
+import glob
+
+
+def clear_old_charts(chart_dir="charts"):
+    """
+    Deletes all PNG files in the given chart directory.
+    """
+    if os.path.exists(chart_dir):
+        for file in glob.glob(os.path.join(chart_dir, "*.png")):
+            try:
+                os.remove(file)
+            except Exception as e:
+                print(f"⚠️ Could not delete {file}: {e}")
+
 
 def count_syllables(word):
     """

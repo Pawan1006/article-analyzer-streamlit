@@ -27,6 +27,7 @@ def count_personal_pronouns(text):
     return count
 
 # 🔬 Main analysis pipeline
+@st.cache_data
 def analyze_articles(path):
     df = load_input_excel(path)
     output_data = []

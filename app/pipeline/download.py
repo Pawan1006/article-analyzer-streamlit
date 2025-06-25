@@ -6,15 +6,11 @@ from app.visualizer import (
 )
 from app.pdf_generator import export_analysis_to_pdf
 
-
 def show_download_section(excel_path, df_result):
     """
     Renders the download section for Excel and PDF output files in the Streamlit app.
-
-    Args:
-        excel_path (str): File path to the Excel output file.
-        df_result (DataFrame): Final processed DataFrame with analysis results.
     """
+
     st.markdown("### 📥 Download Output Files")
 
     # ---------------- Excel Download ----------------
@@ -33,17 +29,22 @@ def show_download_section(excel_path, df_result):
         st.warning("⚠️ Excel path or data not provided.")
 
     # ---------------- PDF Generation ----------------
-    visuals = [
-        ("📊 Sentiment Distribution", lambda df: sentiment_distribution(df)),
-        ("🧠 Word Count vs Complexity", lambda df: word_count_vs_complexity(df)),
-        ("🗣️ Personal Pronouns Barchart", lambda df: personal_pronouns_barchart(df)),
-    ]
+    if "pdf_path" not in st.session_state:
+        with st.spinner("📄 Generating PDF Report..."):
+            # Only generate charts once per session
+            charts = {
+                "📊 Sentiment Distribution": sentiment_distribution(df_result, save=True),
+                "🧠 Word Count vs Complexity": word_count_vs_complexity(df_result, save=True),
+                "🗣️ Personal Pronouns Barchart": personal_pronouns_barchart(df_result, save=True)
+            }
 
+            # Export to PDF and store path in session
+            pdf_path = export_analysis_to_pdf(df_result, charts)
+            st.session_state.pdf_path = pdf_path
+    else:
+        pdf_path = st.session_state.pdf_path
 
     try:
-        with st.spinner("📄 Generating PDF Report..."):
-            pdf_path = export_analysis_to_pdf(df_result, visuals)
-
         with open(pdf_path, "rb") as f:
             st.download_button(
                 label="📄 Download PDF Report",

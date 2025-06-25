@@ -1,42 +1,41 @@
 import os
-import tempfile
-import matplotlib.pyplot as plt
 import pandas as pd
 from reportlab.platypus import (
     SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer,
     Image, PageBreak, KeepTogether
 )
+import streamlit as st
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import landscape, letter
-
 from app.pipeline.summary import compute_summary_insights
 
-
-def export_analysis_to_pdf(df, visual_funcs, output_path="output/analysis_summary.pdf"):
+@st.cache_data
+def export_analysis_to_pdf(df, chart_paths_dict, output_path="output/analysis_summary.pdf"):
     """
-    Exports a full PDF report with:
-    1. Summary insights
-    2. Metrics table
-    3. Visualizations (PNG charts from matplotlib or plotly)
+    Generate a PDF report summarizing article analysis with pre-saved chart images.
 
     Args:
-        df (pd.DataFrame): Analyzed results.
-        visual_funcs (list): List of (title, function) returning a figure (matplotlib or plotly).
-        output_path (str): PDF output path.
+        df (pd.DataFrame): Final result dataframe.
+        chart_paths_dict (dict): Dict with {title: image_path} for pre-saved chart PNGs.
+        output_path (str): Path to save PDF.
+
+    Returns:
+        str: Path to generated PDF.
     """
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    os.makedirs("charts", exist_ok=True)
+
     doc = SimpleDocTemplate(output_path, pagesize=landscape(letter))
     styles = getSampleStyleSheet()
     elements = []
 
     # ========== Page 1: Summary ==========
     summary = compute_summary_insights(df)
-
     elements.append(Paragraph("📊 Article Analysis Summary", styles["Title"]))
     elements.append(Spacer(1, 12))
 
-    insights = [
+    highlights = [
         f"Total Articles Analyzed: {summary['total_articles']}",
         f"Average Polarity Score: {summary['avg_polarity']}",
         f"Positive Articles: {summary['positive_articles']}",
@@ -45,7 +44,7 @@ def export_analysis_to_pdf(df, visual_funcs, output_path="output/analysis_summar
     ]
 
     elements.append(Paragraph("🔹 Highlights", styles["Heading3"]))
-    for item in insights:
+    for item in highlights:
         elements.append(Paragraph(item, styles["Normal"]))
     elements.append(Spacer(1, 12))
 
@@ -53,10 +52,9 @@ def export_analysis_to_pdf(df, visual_funcs, output_path="output/analysis_summar
         elements.append(Paragraph("🔑 Top 10 Common Keywords", styles["Heading3"]))
         for kw, freq in summary["top_keywords"]:
             elements.append(Paragraph(f"• {kw} ({freq} times)", styles["Normal"]))
-
     elements.append(PageBreak())
 
-    # ========== Page 2: Metrics Table ==========
+    # ========== Page 2: Vertical Metrics Table ==========
     df_metric = df.drop(columns=["URL"]).set_index("URL_ID").T.reset_index()
     df_metric.columns = ["Metric"] + df_metric.columns[1:].tolist()
 
@@ -75,37 +73,18 @@ def export_analysis_to_pdf(df, visual_funcs, output_path="output/analysis_summar
     elements.append(table)
     elements.append(PageBreak())
 
-    # ========== Pages 3+: Charts ==========
-    for title, fig_func in visual_funcs:
-        try:
-            print(f"🎯 Generating visual: {title}")
-            fig = fig_func(df)  # This should return a matplotlib or plotly figure
-
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_img:
-                # 🎯 Save matplotlib or plotly chart to PNG
-                if hasattr(fig, "savefig"):
-                    fig.savefig(tmp_img.name, format='png', bbox_inches='tight')
-                    plt.close(fig)
-                elif hasattr(fig, "write_image"):
-                    fig.write_image(tmp_img.name, format="png")
-                else:
-                    raise ValueError(f"Unsupported figure type for {title}")
-
-                block = [
-                    Paragraph(title, styles["Heading2"]),
-                    Spacer(1, 6),
-                    Image(tmp_img.name, width=500, height=300),
-                    Spacer(1, 18)
-                ]
-                elements.append(KeepTogether(block))
-                print(f"✅ Chart added: {title}")
-
-        except Exception as e:
-            print(f"⚠️ Failed to generate '{title}': {e}")
-            elements.append(Paragraph(f"⚠️ Could not generate '{title}': {e}", styles["Normal"]))
+    # ========== Pages 3+: Chart Pages ==========
+    for title, img_path in chart_paths_dict.items():
+        if os.path.exists(img_path):
+            elements.append(KeepTogether([
+                Paragraph(title, styles["Heading2"]),
+                Spacer(1, 6),
+                Image(img_path, width=500, height=300),
+                Spacer(1, 18)
+            ]))
+        else:
+            elements.append(Paragraph(f"⚠️ Could not load chart for '{title}'", styles["Normal"]))
             elements.append(Spacer(1, 12))
 
-    # 🧾 Build PDF
     doc.build(elements)
-    print(f"✅ PDF saved to: {output_path}")
     return output_path

@@ -54,7 +54,7 @@ def sentiment_distribution(df, save=False):
         font=dict(color="#000000")
     )
     if save:
-        save_plotly_as_png(fig, "sentiment_distribution")
+        return save_plotly_as_png(fig, "sentiment_distribution")
     return wrap_plotly(fig)
 
 
@@ -81,7 +81,7 @@ def word_count_vs_complexity(df, save=False):
         font=dict(color="#000000")
     )
     if save:
-        save_plotly_as_png(fig, "word_count_vs_complexity")
+        return save_plotly_as_png(fig, "word_count_vs_complexity")
     return wrap_plotly(fig)
 
 
@@ -117,7 +117,7 @@ def personal_pronouns_barchart(df, save=False):
         bargap=0.3
     )
     if save:
-        save_plotly_as_png(fig, "personal_pronouns_barchart")
+        return save_plotly_as_png(fig, "personal_pronouns_barchart")
     return wrap_plotly(fig)
 
 
