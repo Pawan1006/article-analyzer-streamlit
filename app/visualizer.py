@@ -2,32 +2,17 @@ import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
-import os
-import plotly.io as pio
 
-
-def save_plotly_as_png(fig, filename):
-    os.makedirs("charts", exist_ok=True)
-    path = f"charts/{filename}.png"
-    try:
-        fig.write_image(path)
-    except Exception as e:
-        print(f"⚠️ Could not save {filename} as PNG: {e}")
-    return path
-
+# ----- INTERACTIVE CHARTS FOR STREAMLIT UI -----
 
 def wrap_plotly(fig):
-    """
-    Tags Plotly figure so it can be detected in the PDF exporter.
-    """
+    """ Tags Plotly figure so it can be displayed in Streamlit cleanly. """
     fig.__class__.__name__ = "WrappedPlotlyFigure"
     return fig
 
 
-def sentiment_distribution(df, save=False):
-    """
-    Displays histogram of polarity scores grouped by sentiment.
-    """
+def sentiment_distribution(df):
+    """ Interactive histogram of polarity scores grouped by sentiment. """
     df = df.copy()
     df["SentimentGroup"] = df["POLARITY SCORE"].apply(
         lambda x: "Positive" if x > 0.1 else "Negative" if x < -0.1 else "Neutral"
@@ -53,15 +38,11 @@ def sentiment_distribution(df, save=False):
         yaxis_title="Count",
         font=dict(color="#000000")
     )
-    if save:
-        return save_plotly_as_png(fig, "sentiment_distribution")
     return wrap_plotly(fig)
 
 
-def word_count_vs_complexity(df, save=False):
-    """
-    Scatter plot showing word count vs % of complex words.
-    """
+def word_count_vs_complexity(df):
+    """ Interactive scatter plot: word count vs percentage of complex words. """
     fig = px.scatter(
         df,
         x="WORD COUNT",
@@ -80,15 +61,11 @@ def word_count_vs_complexity(df, save=False):
         yaxis_title="% of Complex Words",
         font=dict(color="#000000")
     )
-    if save:
-        return save_plotly_as_png(fig, "word_count_vs_complexity")
     return wrap_plotly(fig)
 
 
-def personal_pronouns_barchart(df, save=False):
-    """
-    Bar chart showing usage of personal pronouns per article.
-    """
+def personal_pronouns_barchart(df):
+    """ Interactive bar chart for personal pronoun usage per article. """
     df_clean = df[["URL_ID", "PERSONAL PRONOUNS"]].dropna()
     df_clean["PERSONAL PRONOUNS"] = pd.to_numeric(df_clean["PERSONAL PRONOUNS"], errors="coerce").fillna(0)
 
@@ -116,15 +93,13 @@ def personal_pronouns_barchart(df, save=False):
         uniformtext_mode='hide',
         bargap=0.3
     )
-    if save:
-        return save_plotly_as_png(fig, "personal_pronouns_barchart")
     return wrap_plotly(fig)
 
 
+# ----- EXTRA CHARTS FOR STREAMLIT (Optional) -----
+
 def generate_wordcloud(keywords):
-    """
-    Generates a WordCloud from a list of keywords.
-    """
+    """ Generates a word cloud image using matplotlib. """
     if not keywords:
         fig, ax = plt.subplots()
         ax.text(0.5, 0.5, "No keywords available", ha="center", va="center")
@@ -139,9 +114,7 @@ def generate_wordcloud(keywords):
 
 
 def plot_sentiment_comparison(sentiment_data):
-    """
-    Bar chart comparing TextBlob and VADER sentiment scores.
-    """
+    """ Bar chart comparing TextBlob and VADER sentiment scores. """
     df = pd.DataFrame(sentiment_data)
     df_melted = df.melt(id_vars='URL_ID', var_name='Method', value_name='Score')
 
@@ -158,9 +131,7 @@ def plot_sentiment_comparison(sentiment_data):
 
 
 def plot_readability_comparison(readability_data):
-    """
-    Bar chart comparing FOG index and Flesch reading ease.
-    """
+    """ Bar chart comparing FOG index and Flesch Reading Ease. """
     df = pd.DataFrame(readability_data)
     df_melted = df.melt(id_vars='URL_ID', var_name='Metric', value_name='Score')
 

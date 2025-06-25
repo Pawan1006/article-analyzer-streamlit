@@ -1,17 +1,19 @@
 import streamlit as st
 import os
-from app.visualizer import (
-    sentiment_distribution,
-    word_count_vs_complexity,
-    personal_pronouns_barchart
+from PIL import Image
+
+from app.pdf_charts import (  # <-- USE THIS INSTEAD OF app.visualizer
+    save_sentiment_distribution_matplotlib,
+    save_word_count_vs_complexity_matplotlib,
+    save_personal_pronouns_barchart_matplotlib
 )
 from app.pdf_generator import export_analysis_to_pdf
+
 
 def show_download_section(excel_path, df_result, sample_path):
     """
     Renders the download section for Excel and PDF output files in the Streamlit app.
     """
-
     st.markdown("### 📥 Download Output Files")
 
     # ---------------- Excel Download ----------------
@@ -32,37 +34,35 @@ def show_download_section(excel_path, df_result, sample_path):
     # ---------------- PDF Generation ----------------
     if "pdf_path" not in st.session_state:
         with st.spinner("📄 Generating PDF Report..."):
-            # Only generate charts once per session
+
+            # Save Matplotlib static charts to /charts
+            save_sentiment_distribution_matplotlib(df_result)
+            save_word_count_vs_complexity_matplotlib(df_result)
+            save_personal_pronouns_barchart_matplotlib(df_result)
+
+            # Paths to pass into PDF generator
             charts = {
-                "📊 Sentiment Distribution": sentiment_distribution(df_result, save=True),
-                "🧠 Word Count vs Complexity": word_count_vs_complexity(df_result, save=True),
-                "🗣️ Personal Pronouns Barchart": personal_pronouns_barchart(df_result, save=True)
+                "📊 Sentiment Distribution": "charts/sentiment_distribution.png",
+                "🧠 Word Count vs Complexity": "charts/word_count_vs_complexity.png",
+                "🗣️ Personal Pronouns Barchart": "charts/personal_pronouns_barchart.png"
             }
-            from PIL import Image
 
-            chart_paths = [
-                "charts/sentiment_distribution.png",
-                "charts/word_count_vs_complexity.png",
-                "charts/personal_pronouns_barchart.png"
-            ]
-
+            # Optional: Show thumbnails for debugging
             st.markdown("### 🔍 Chart Save Check (Temporary Debug)")
-
-            for path in chart_paths:
+            for label, path in charts.items():
                 if os.path.exists(path):
                     st.success(f"✅ Found: {path}")
-                    st.image(Image.open(path), caption=path)
+                    st.image(Image.open(path), caption=label, use_column_width=True)
                 else:
                     st.error(f"❌ Missing: {path}")
 
-
-
-            # Export to PDF and store path in session
+            # Generate PDF
             pdf_path = export_analysis_to_pdf(df_result, charts, input_path=sample_path)
             st.session_state.pdf_path = pdf_path
     else:
         pdf_path = st.session_state.pdf_path
 
+    # ---------------- PDF Download Button ----------------
     try:
         with open(pdf_path, "rb") as f:
             st.download_button(
@@ -71,6 +71,5 @@ def show_download_section(excel_path, df_result, sample_path):
                 file_name=os.path.basename(pdf_path),
                 mime="application/pdf"
             )
-
     except Exception as e:
         st.error(f"❌ Failed to generate PDF report: {e}")

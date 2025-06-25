@@ -25,15 +25,12 @@ def show_visual_tabs(df_result):
     # --- 📈 Visual Charts Tab ---
     with tab2:
         st.subheader("📊 Sentiment Distribution")
-        sentiment_distribution(df_result, save=True)
         st.plotly_chart(sentiment_distribution(df_result), use_container_width=True)
 
         st.subheader("🧠 Word Count vs. Complexity")
-        word_count_vs_complexity(df_result, save=True)
         st.plotly_chart(word_count_vs_complexity(df_result), use_container_width=True)
 
         st.subheader("🗣️ Personal Pronouns Heatmap")
-        personal_pronouns_barchart(df_result, save=True)
         st.plotly_chart(personal_pronouns_barchart(df_result), use_container_width=True)
 
     # --- 🔑 Keywords Tab ---
