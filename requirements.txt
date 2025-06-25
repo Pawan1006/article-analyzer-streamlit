@@ -17,3 +17,4 @@ rake-nltk
 newspaper3k
 lxml
 readability-lxml
+seaborn
