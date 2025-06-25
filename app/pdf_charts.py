@@ -29,7 +29,7 @@ def save_sentiment_distribution_matplotlib(df, path="charts/sentiment_distributi
     plt.close()
 
 
-def save_wordcount_vs_complexity_matplotlib(df, path="charts/word_count_vs_complexity.png"):
+def save_word_count_vs_complexity_matplotlib(df, path="charts/word_count_vs_complexity.png"):
     plt.figure(figsize=(8, 5))
     plt.scatter(df["WORD COUNT"], df["PERCENTAGE OF COMPLEX WORDS"], color='royalblue')
 
