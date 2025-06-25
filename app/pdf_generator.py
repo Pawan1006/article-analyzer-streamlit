@@ -32,7 +32,7 @@ def export_analysis_to_pdf(df, chart_paths_dict, output_path="output/analysis_su
 
     # ========== Page 1: Summary ==========
     summary = compute_summary_insights(df)
-    elements.append(Paragraph("📊 Article Analysis Summary", styles["Title"]))
+    elements.append(Paragraph("--Article Analysis Summary--", styles["Title"]))
     elements.append(Spacer(1, 12))
 
     highlights = [
@@ -43,20 +43,20 @@ def export_analysis_to_pdf(df, chart_paths_dict, output_path="output/analysis_su
         f"Neutral Articles: {summary['neutral_articles']}"
     ]
 
-    elements.append(Paragraph("🔹 Highlights", styles["Heading3"]))
+    elements.append(Paragraph("Highlights -", styles["Heading3"]))
     for item in highlights:
         elements.append(Paragraph(item, styles["Normal"]))
     elements.append(Spacer(1, 12))
 
     if summary.get("top_keywords"):
-        elements.append(Paragraph("🔑 Top 10 Common Keywords", styles["Heading3"]))
+        elements.append(Paragraph("Top 10 Common Keywords -", styles["Heading3"]))
         for kw, freq in summary["top_keywords"]:
             elements.append(Paragraph(f"• {kw} ({freq} times)", styles["Normal"]))
     elements.append(PageBreak())
 
     # ========== Page 2: Vertical Metrics Table ==========
     df_metric = df.drop(columns=["URL"]).set_index("URL_ID").T.reset_index()
-    df_metric.columns = ["Metric"] + df_metric.columns[1:].tolist()
+    df_metric.columns = ["Metric"] + [f"URL_ID-{col}" for col in df_metric.columns[1:]]
 
     table_data = [df_metric.columns.tolist()] + df_metric.values.tolist()
     table = Table(table_data, repeatRows=1, hAlign='LEFT')
@@ -68,7 +68,7 @@ def export_analysis_to_pdf(df, chart_paths_dict, output_path="output/analysis_su
         ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
     ]))
 
-    elements.append(Paragraph("📋 Article Metrics Table", styles["Heading2"]))
+    elements.append(Paragraph("Article Metrics Table -", styles["Heading2"]))
     elements.append(Spacer(1, 6))
     elements.append(table)
     elements.append(PageBreak())

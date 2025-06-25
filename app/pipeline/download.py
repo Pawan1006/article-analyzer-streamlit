@@ -33,11 +33,10 @@ def show_download_section(excel_path, df_result):
         with st.spinner("📄 Generating PDF Report..."):
             # Only generate charts once per session
             charts = {
-                "📊 Sentiment Distribution": sentiment_distribution(df_result, save=True),
-                "🧠 Word Count vs Complexity": word_count_vs_complexity(df_result, save=True),
-                "🗣️ Personal Pronouns Barchart": personal_pronouns_barchart(df_result, save=True)
+                "📊 Sentiment Distribution": "charts/sentiment_distribution.png",
+                "🧠 Word Count vs Complexity": "charts/word_count_vs_complexity.png",
+                "🗣️ Personal Pronouns Barchart": "charts/personal_pronouns_barchart.png"
             }
-
             # Export to PDF and store path in session
             pdf_path = export_analysis_to_pdf(df_result, charts)
             st.session_state.pdf_path = pdf_path
