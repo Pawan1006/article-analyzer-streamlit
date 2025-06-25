@@ -39,6 +39,25 @@ def show_download_section(excel_path, df_result, sample_path):
                 "🧠 Word Count vs Complexity": save_plotly_as_png(word_count_vs_complexity(df_result), "word_count_vs_complexity"),
                 "🗣️ Personal Pronouns Barchart": save_plotly_as_png(personal_pronouns_barchart(df_result), "personal_pronouns_barchart")
             }
+            from PIL import Image
+
+            chart_paths = [
+                "charts/sentiment_distribution.png",
+                "charts/word_count_vs_complexity.png",
+                "charts/personal_pronouns_barchart.png"
+            ]
+
+            st.markdown("### 🔍 Chart Save Check (Temporary Debug)")
+
+            for path in chart_paths:
+                if os.path.exists(path):
+                    st.success(f"✅ Found: {path}")
+                    st.image(Image.open(path), caption=path)
+                else:
+                    st.error(f"❌ Missing: {path}")
+
+
+
             # Export to PDF and store path in session
             pdf_path = export_analysis_to_pdf(df_result, charts, input_path=sample_path)
             st.session_state.pdf_path = pdf_path
