@@ -6,6 +6,7 @@ from app.visualizer import (
     personal_pronouns_barchart
 )
 from app.pdf_generator import export_analysis_to_pdf
+from app.visualizer import save_plotly_as_png
 
 def show_download_section(excel_path, df_result, sample_path):
     """
@@ -34,9 +35,9 @@ def show_download_section(excel_path, df_result, sample_path):
         with st.spinner("📄 Generating PDF Report..."):
             # Only generate charts once per session
             charts = {
-                "📊 Sentiment Distribution": "charts/sentiment_distribution.png",
-                "🧠 Word Count vs Complexity": "charts/word_count_vs_complexity.png",
-                "🗣️ Personal Pronouns Barchart": "charts/personal_pronouns_barchart.png"
+                "📊 Sentiment Distribution": save_plotly_as_png(sentiment_distribution(df_result), "sentiment_distribution"),
+                "🧠 Word Count vs Complexity": save_plotly_as_png(word_count_vs_complexity(df_result), "word_count_vs_complexity"),
+                "🗣️ Personal Pronouns Barchart": save_plotly_as_png(personal_pronouns_barchart(df_result), "personal_pronouns_barchart")
             }
             # Export to PDF and store path in session
             pdf_path = export_analysis_to_pdf(df_result, charts, input_path=sample_path)
