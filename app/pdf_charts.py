@@ -8,7 +8,7 @@ def ensure_charts_dir():
     os.makedirs("charts", exist_ok=True)
 
 
-def plot_sentiment_distribution_matplotlib(df, path="charts/sentiment_distribution.png"):
+def save_sentiment_distribution_matplotlib(df, path="charts/sentiment_distribution.png"):
     df = df.copy()
     df["SentimentGroup"] = df["POLARITY SCORE"].apply(
         lambda x: "Positive" if x > 0.1 else "Negative" if x < -0.1 else "Neutral"
@@ -29,7 +29,7 @@ def plot_sentiment_distribution_matplotlib(df, path="charts/sentiment_distributi
     plt.close()
 
 
-def plot_wordcount_vs_complexity_matplotlib(df, path="charts/word_count_vs_complexity.png"):
+def save_wordcount_vs_complexity_matplotlib(df, path="charts/word_count_vs_complexity.png"):
     plt.figure(figsize=(8, 5))
     plt.scatter(df["WORD COUNT"], df["PERCENTAGE OF COMPLEX WORDS"], color='royalblue')
 
