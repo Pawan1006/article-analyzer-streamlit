@@ -10,39 +10,45 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import landscape, letter
 from app.pipeline.summary import compute_summary_insights
 
+
 @st.cache_data
-def export_analysis_to_pdf(df, chart_paths_dict, input_path, output_dir="output"):
+def export_analysis_to_pdf(df, chart_paths_dict, input_path, session_id=None, output_dir="output"):
     """
     Generate a PDF report summarizing article analysis with pre-saved chart images.
 
     Args:
         df (pd.DataFrame): Final result dataframe.
         chart_paths_dict (dict): Dict with {title: image_path} for pre-saved chart PNGs.
-        output_path (str): Path to save PDF.
-
+        input_path (str): Path of uploaded input file (used for naming output).
+        session_id (str): Unique ID to prevent file collisions (optional).
+        output_dir (str): Directory to store the generated PDF.
+        
     Returns:
-        str: Path to generated PDF.
+        str: Full path to the generated PDF.
     """
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs("charts", exist_ok=True)
 
-    filename = os.path.splitext(os.path.basename(input_path))[0]  # → sample_input
-    # Cleanup old PDFs matching pattern *_analysis_summary.pdf
+    filename_base = os.path.splitext(os.path.basename(input_path))[0]  # sample_input
+    if session_id:
+        filename_base = f"{filename_base}_{session_id}"
+
+    # Clean up previous PDFs for same session or file (optional but good hygiene)
     for file in os.listdir(output_dir):
-        if file.endswith("_analysis_summary.pdf"):
+        if filename_base in file and file.endswith("_analysis_summary.pdf"):
             try:
                 os.remove(os.path.join(output_dir, file))
             except Exception as e:
                 print(f"⚠️ Could not delete {file}: {e}")
 
-    # Save new output path
-    output_path = os.path.join(output_dir, f"{filename}_analysis_summary.pdf")
+    output_path = os.path.join(output_dir, f"{filename_base}_analysis_summary.pdf")
 
+    # Begin PDF content
     doc = SimpleDocTemplate(output_path, pagesize=landscape(letter))
     styles = getSampleStyleSheet()
     elements = []
 
-    # ========== Page 1: Summary ==========
+    # Page 1: Summary
     summary = compute_summary_insights(df)
     elements.append(Paragraph("--Article Analysis Summary--", styles["Title"]))
     elements.append(Spacer(1, 12))
@@ -66,7 +72,7 @@ def export_analysis_to_pdf(df, chart_paths_dict, input_path, output_dir="output"
             elements.append(Paragraph(f"• {kw} ({freq} times)", styles["Normal"]))
     elements.append(PageBreak())
 
-    # ========== Page 2: Vertical Metrics Table ==========
+    # Page 2: Metrics Table
     df_metric = df.drop(columns=["URL"]).set_index("URL_ID").T.reset_index()
     df_metric.columns = ["Metric"] + [f"URL_ID-{col}" for col in df_metric.columns[1:]]
 
@@ -85,7 +91,7 @@ def export_analysis_to_pdf(df, chart_paths_dict, input_path, output_dir="output"
     elements.append(table)
     elements.append(PageBreak())
 
-    # ========== Pages 3+: Chart Pages ==========
+    # Pages 3+: Charts
     for title, img_path in chart_paths_dict.items():
         if os.path.exists(img_path):
             elements.append(KeepTogether([

@@ -9,13 +9,13 @@ def ensure_charts_dir():
     os.makedirs("charts", exist_ok=True)
 
 
-def save_sentiment_distribution_matplotlib(df, path="charts/sentiment_distribution.png"):
+def save_sentiment_distribution_matplotlib(df, session_id=""):
+    ensure_charts_dir()
     df = df.copy()
     df["SentimentGroup"] = df["POLARITY SCORE"].apply(
         lambda x: "Positive" if x > 0.1 else "Negative" if x < -0.1 else "Neutral"
     )
 
-    # Define common bin edges
     bins = np.linspace(df["POLARITY SCORE"].min(), df["POLARITY SCORE"].max(), 10)
 
     plt.figure(figsize=(8, 5))
@@ -28,12 +28,15 @@ def save_sentiment_distribution_matplotlib(df, path="charts/sentiment_distributi
     plt.ylabel("Count")
     plt.legend(title="Sentiment", loc="center left", bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
-    os.makedirs("charts", exist_ok=True)
+
+    path = f"charts/{session_id}_sentiment_distribution.png"
     plt.savefig(path)
     plt.close()
+    return path
 
 
-def save_word_count_vs_complexity_matplotlib(df, path="charts/word_count_vs_complexity.png"):
+def save_word_count_vs_complexity_matplotlib(df, session_id=""):
+    ensure_charts_dir()
     plt.figure(figsize=(8, 5))
     plt.scatter(df["WORD COUNT"], df["PERCENTAGE OF COMPLEX WORDS"], color='royalblue')
 
@@ -41,17 +44,18 @@ def save_word_count_vs_complexity_matplotlib(df, path="charts/word_count_vs_comp
         plt.text(row["WORD COUNT"], row["PERCENTAGE OF COMPLEX WORDS"], str(row["URL_ID"]),
                  fontsize=7, ha='left', va='bottom')
 
-    plt.title("Word Count vs Complex Word Usage")
+    plt.title("🧠 Word Count vs Complex Word Usage")
     plt.xlabel("Word Count")
     plt.ylabel("% of Complex Words")
     plt.tight_layout()
-    os.makedirs("charts", exist_ok=True)
+
+    path = f"charts/{session_id}_word_count_vs_complexity.png"
     plt.savefig(path)
     plt.close()
+    return path
 
 
-
-def save_personal_pronouns_barchart_matplotlib(df, path="charts/personal_pronouns_barchart.png"):
+def save_personal_pronouns_barchart_matplotlib(df, session_id=""):
     ensure_charts_dir()
     df_clean = df[["URL_ID", "PERSONAL PRONOUNS"]].dropna()
     df_clean["PERSONAL PRONOUNS"] = pd.to_numeric(df_clean["PERSONAL PRONOUNS"], errors="coerce").fillna(0)
@@ -63,10 +67,13 @@ def save_personal_pronouns_barchart_matplotlib(df, path="charts/personal_pronoun
         y="PERSONAL PRONOUNS",
         palette="Blues_d"
     )
-    plt.title("Personal Pronoun Usage per Article")
+    plt.title("🗣 Personal Pronoun Usage per Article")
     plt.xlabel("Article ID")
     plt.ylabel("Count of Personal Pronouns")
     plt.xticks(rotation=90)
     plt.tight_layout()
+
+    path = f"charts/{session_id}_personal_pronouns_barchart.png"
     plt.savefig(path)
     plt.close()
+    return path
