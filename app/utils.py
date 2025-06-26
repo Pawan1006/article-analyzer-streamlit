@@ -2,6 +2,31 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import glob
+import time
+
+
+def clean_old_pdfs(folder="output", max_age_minutes=30):
+
+    """Deletes PDF files older than a specified number of minutes in the given folder."""
+    
+    now = time.time()
+    cutoff = now - (max_age_minutes * 60)
+
+    pdf_files = glob.glob(os.path.join(folder, "*.pdf"))
+    deleted_count = 0
+
+    for file_path in pdf_files:
+        if os.path.isfile(file_path):
+            file_mtime = os.path.getmtime(file_path)
+            if file_mtime < cutoff:
+                try:
+                    os.remove(file_path)
+                    deleted_count += 1
+                except Exception as e:
+                    print(f"Error deleting {file_path}: {e}")
+    
+    print(f"🧹 Cleaned {deleted_count} old PDF(s) from '{folder}'")
+
 
 
 def clear_old_charts(chart_dir="charts"):

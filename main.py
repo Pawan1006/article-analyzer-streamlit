@@ -5,7 +5,7 @@ from app.pipeline.analyze import analyze_and_cache_results
 from app.pipeline.summary import display_summary
 from app.pipeline.visuals import show_visual_tabs
 from app.pipeline.download import show_download_section
-from app.utils import clear_old_charts 
+from app.utils import clear_old_charts, clean_old_pdfs
 
 # ---------------------- App Configuration ----------------------
 st.set_page_config(
@@ -50,6 +50,7 @@ if sample_path:
         st.session_state.get("last_file_path") != sample_path
     ):
         clear_old_charts() # clean old charts
+        clean_old_pdfs(folder="output", max_age_minutes=30)
         st.session_state.pop("pdf_path", None)
         df_result = extract_articles_from_file(sample_path)
         if df_result is not None:
