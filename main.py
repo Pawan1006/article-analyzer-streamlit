@@ -12,6 +12,31 @@ st.set_page_config(
     page_title="Article Analyzer with Visual Insights",
     layout="wide"
 )
+
+# ------------------- Sidebar: About This App -----------------------
+with st.sidebar:
+    st.markdown("## 🤔 Why Use This App?")
+    st.info("""
+    This intelligent dashboard empowers you to:
+    - 📈 **Compare Sentiment Tools** — ML-based (TextBlob) vs Rule-based (VADER)
+    - 📚 **Evaluate Readability** — using Flesch Ease & Gunning Fog
+    - 🧪 **Benchmark Tool Differences** — through clear visual comparisons
+    - 🧠 **Build Trust in Results** — with multi-model insights
+    """)
+
+    st.markdown("## 🧭 What You Can Do")
+    st.success("""
+    - 🔍 Analyze articles for **Sentiment, Readability, and Keywords**
+    - 📊 Visualize insights via **interactive charts**
+    - 📥 **Export** your results to CSV and PDF for further use
+    - 🧬 **Explore** how different NLP tools behave on the same content
+    """)
+
+    st.markdown("---")
+    st.markdown("### ⚙️ Powered by Precision:")
+    st.markdown("`AI` + `Stats` + `Visuals`")
+
+
 st.title("📰 Advanced Article Analyzer with Visual Insights")
 
 # ---------------------- Step 1: Upload Input ----------------------

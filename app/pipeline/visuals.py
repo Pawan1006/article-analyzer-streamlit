@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 import streamlit as st
 from app.visualizer import (
     sentiment_distribution,
@@ -6,10 +7,12 @@ from app.visualizer import (
     personal_pronouns_barchart,
     generate_wordcloud,
     plot_sentiment_comparison,
-    plot_readability_comparison
+    plot_readability_comparison,
+    plot_sentiment_difference,
+    plot_sentiment_agreement_pie
 )
 from app.keyword_extractor import extract_keywords_from_text
-from app.benchmark import benchmark_sentiments, benchmark_readability
+from app.benchmark import benchmark_sentiments, benchmark_readability, benchmarking_tools_page
 
 
 def show_visual_tabs(df_result):
@@ -44,7 +47,7 @@ def show_visual_tabs(df_result):
                 try:
                     with open(file_path, "r", encoding="utf-8") as f:
                         text = f.read()
-                    keywords = extract_keywords_from_text(text)
+                    keywords = extract_keywords_from_text(text, max_keywords=5)
                     all_keywords.extend(keywords)
 
                     # Display keywords as styled chips
@@ -62,30 +65,51 @@ def show_visual_tabs(df_result):
         st.subheader("☁️ Common Keyword WordCloud")
         st.pyplot(generate_wordcloud(all_keywords))
 
-    # --- 🧪 Benchmark Tab ---
+        # --- 🧪 Benchmark Tab ---
     with tab4:
         st.subheader("📊 Benchmarking Tools (TextBlob vs VADER, FOG vs Flesch)")
 
-        top_n = st.slider("Select number of articles to benchmark:", 3, 20, 5)
-
-        sentiment_data = benchmark_sentiments(df_result, top_n=top_n)
-        readability_data = benchmark_readability(df_result, top_n=top_n)
-
-        # Optional insights
         with st.expander("ℹ️ Why Benchmarks?"):
             st.markdown("""
-            - Benchmarking shows how different tools interpret text.
-            - TextBlob vs VADER contrast rule-based and ML-based sentiment engines.
-            - FOG vs Flesch Grade assess readability from different lenses.
-            - Helps in validating your NLP pipeline with confidence.
+            - Benchmarking helps validate your NLP pipeline.
+            - TextBlob vs VADER → compare ML vs rule-based sentiment.
+            - FOG vs Flesch → test readability from complexity and ease perspectives.
             """)
 
-        if sentiment_data:
-            st.plotly_chart(plot_sentiment_comparison(sentiment_data), use_container_width=True)
-        else:
-            st.warning("⚠️ No sentiment data to visualize.")
+        # Run benchmarking directly with sliders
+        top_n = st.slider("📌 Select number of articles to benchmark:", min_value=2, max_value=20, value=5)
 
-        if readability_data:
-            st.plotly_chart(plot_readability_comparison(readability_data), use_container_width=True)
+        sentiment_results = benchmark_sentiments(df_result, top_n=top_n)
+        readability_results = benchmark_readability(df_result, top_n=top_n)
+
+        if sentiment_results:
+            st.subheader("🧪 Sentiment Comparison")
+            st.plotly_chart(plot_sentiment_comparison(sentiment_results), use_container_width=True)
+            st.plotly_chart(plot_sentiment_difference(sentiment_results), use_container_width=True)
+
+            sentiment_df = pd.DataFrame(sentiment_results)
+
+            correlation = sentiment_df[["TextBlob", "VADER"]].corr().iloc[0, 1]
+            st.plotly_chart(plot_sentiment_agreement_pie(sentiment_df), use_container_width=True)
+
+            
+            with st.expander("📋 Detailed Sentiment Table"):
+                st.dataframe(sentiment_df, use_container_width=True)
+                csv = sentiment_df.to_csv(index=False).encode("utf-8")
+                st.download_button("⬇️ Download Sentiment CSV", csv, "sentiment_benchmark.csv", "text/csv")
         else:
-            st.warning("⚠️ No readability data to visualize.")
+            st.warning("⚠️ No sentiment data available.")
+
+        st.markdown("---")
+
+        if readability_results:
+            st.subheader("📚 Readability Comparison")
+            st.plotly_chart(plot_readability_comparison(readability_results), use_container_width=True)
+
+            readability_df = pd.DataFrame(readability_results)
+            with st.expander("📋 Detailed Readability Table"):
+                st.dataframe(readability_df, use_container_width=True)
+                csv_readability = readability_df.to_csv(index=False).encode("utf-8")
+                st.download_button("⬇️ Download Readability CSV", csv_readability, "readability_benchmark.csv", "text/csv")
+        else:
+            st.warning("⚠️ No readability data available.")

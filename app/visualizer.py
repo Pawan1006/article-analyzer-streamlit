@@ -103,7 +103,7 @@ def personal_pronouns_barchart(df):
     return wrap_plotly(fig)
 
 
-# ----- EXTRA CHARTS FOR STREAMLIT (Optional) -----
+# ----- EXTRA CHARTS FOR STREAMLIT -----
 
 def generate_wordcloud(keywords):
     """ Generates a word cloud image using matplotlib. """
@@ -122,7 +122,7 @@ def generate_wordcloud(keywords):
 
 def plot_sentiment_comparison(sentiment_data):
     """ Bar chart comparing TextBlob and VADER sentiment scores. """
-    df = pd.DataFrame(sentiment_data)
+    df = pd.DataFrame(sentiment_data)[["URL_ID", "TextBlob", "VADER"]]
     df_melted = df.melt(id_vars='URL_ID', var_name='Method', value_name='Score')
 
     fig = px.bar(
@@ -151,4 +151,57 @@ def plot_readability_comparison(readability_data):
         title="📚 Readability Comparison: FOG vs Flesch",
         labels={"Score": "Readability Score", "URL_ID": "Article ID"}
     )
+    return wrap_plotly(fig)
+
+def plot_sentiment_difference(sentiment_data):
+    """
+    Bar chart showing the difference in polarity scores: VADER - TextBlob.
+    Helps detect how far apart the tools are on sentiment.
+    """
+    df = pd.DataFrame(sentiment_data)
+    if "Difference" not in df.columns:
+        df["Difference"] = df["VADER"] - df["TextBlob"]
+
+    fig = px.bar(
+        df,
+        x="URL_ID",
+        y="Difference",
+        text="Difference",
+        title="📉 Sentiment Score Difference (VADER - TextBlob)",
+        labels={"Difference": "Polarity Score Gap", "URL_ID": "Article ID"},
+        color_discrete_sequence=["#ff6b6b"]
+    )
+    fig.update_traces(textposition="outside")
+    fig.update_layout(template="plotly_white", yaxis_title="VADER - TextBlob")
+    return wrap_plotly(fig)
+
+
+def plot_sentiment_agreement_pie(sentiment_df):
+    """
+    Interactive pie chart showing agreement between TextBlob and VADER sentiment results.
+    """
+    agree = (sentiment_df["Agreement"] == "Agree").sum()
+    disagree = (sentiment_df["Agreement"] == "Disagree").sum()
+
+    fig = px.pie(
+        values=[agree, disagree],
+        names=["Agree", "Disagree"],
+        color=["Agree", "Disagree"],
+        color_discrete_map={"Agree": "#2ecc71", "Disagree": "#e74c3c"},
+        title="🧾 Sentiment Agreement (TextBlob vs VADER)",
+        hole=0.4  # 🍩 Donut-style for a modern look
+    )
+    
+    fig.update_traces(
+        textposition='inside',
+        textinfo='percent+label',
+        pull=[0.05 if disagree > agree else 0, 0.05 if agree > disagree else 0],  # highlight larger
+    )
+    
+    fig.update_layout(
+        template="plotly_dark",
+        legend_title="Agreement",
+        showlegend=True
+    )
+
     return wrap_plotly(fig)
