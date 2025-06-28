@@ -33,7 +33,7 @@ def show_visual_tabs(df_result):
         st.subheader("🧠 Word Count vs. Complexity")
         st.plotly_chart(word_count_vs_complexity(df_result), use_container_width=True)
 
-        st.subheader("🗣️ Personal Pronouns Heatmap")
+        st.subheader("🗣️ Personal Pronouns BarChart")
         st.plotly_chart(personal_pronouns_barchart(df_result), use_container_width=True)
 
     # --- 🔑 Keywords Tab ---
