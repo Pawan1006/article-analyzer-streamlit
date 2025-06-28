@@ -39,10 +39,13 @@ A powerful and interactive Streamlit-based web app that analyzes articles for **
 ---
 
 ## 🖼️ Sample Screenshots
-
-| Benchmarking | Keyword Cloud | Visuals |
+| Home | Input Uploded | Summary |
 |--------------|----------------|---------|
-| ![Sentiment Pie](charts/5f6b7091_sentiment_distribution.png) | ![Word Count vs Complexity](charts/5f6b7091_word_count_vs_complexity.png) | ![Personal Pronouns](charts/5f6b7091_personal_pronouns_barchart.png) |
+| ![Home](screenshots/Starts.png) | ![Input Uploded](screenshots/after_input.png) | ![Summary](screenshots/Summary.png) |
+
+| Sentiment | Keyword Cloud | Benchmark |
+|--------------|----------------|---------|
+| ![Sentiment Chart](screenshots/Sentiment_chart.png) | ![Word Cloud](screenshots/Word_Cloud.png) | ![Benchmark](screenshots/Sentiment_comparison.png) |
 
 ---
 
@@ -98,16 +101,16 @@ streamlit run main_app.py
 
 ---
 
-- 📃 License
+## 📃 License
   - This project is open-source and free to use under the MIT License.
 
 ---
 
-- 👤 Author
-  - Pawan Solanki
-  - 🎓 BS in Data Science & Applications (IIT Madras)
-  - 💡 Passionate about solving real-world problems with data
+## 👤 Author
+**Pawan Solanki**  
+🎓 *B.S. in Data Science & Applications* — *IIT Madras*  
+💡 Passionate about solving real-world problems with data
   
 ---
 
-- ⭐ If this project helped you, consider giving it a star and sharing it with others.
+## ⭐ If this project helped you, consider giving it a star and sharing it with others.
