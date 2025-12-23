@@ -1,20 +1,29 @@
-streamlit
-numpy<2
-pandas
-requests
-beautifulsoup4
-nltk
-textblob
-textstat
-openpyxl
-plotly
-spacy
-yake
+streamlit==1.52.2
+
+# Core
+numpy>=1.26,<2.0
+pandas==2.3.3
+
+# NLP / Scraping
+newspaper3k==0.2.8
+readability-lxml==0.8.4.1
+beautifulsoup4==4.14.3
+requests==2.32.5
+
+# Text processing
+nltk==3.9.2
+textblob==0.19.0
+textstat==0.7.12
+yake==0.6.0
+rake-nltk==1.0.6
+
+# Visualization
+matplotlib==3.10.8
+seaborn==0.13.2
+plotly==6.5.0
 wordcloud==1.8.2
-reportlab
-kaleido
-rake-nltk
-newspaper3k
-lxml
-readability-lxml
-seaborn
+pillow<10.0   # 🔥 CRITICAL FIX
+
+# Export
+openpyxl==3.1.5
+reportlab==4.4.7
