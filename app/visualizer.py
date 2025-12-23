@@ -115,7 +115,7 @@ def generate_wordcloud(keywords):
 
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(" ".join(keywords))
     fig, ax = plt.subplots(figsize=(10, 5))
-    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.imshow(wordcloud.to_array(), interpolation='bilinear')
     ax.axis("off")
     return fig
 

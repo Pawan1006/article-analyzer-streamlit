@@ -10,7 +10,7 @@ openpyxl
 plotly
 spacy
 yake
-wordcloud
+wordcloud==1.9.5
 reportlab
 kaleido
 rake-nltk
