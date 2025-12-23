@@ -4,13 +4,13 @@ streamlit==1.52.2
 numpy>=1.26,<2.0
 pandas==2.3.3
 
-# NLP / Scraping
+# Scraping
+requests==2.32.5
+beautifulsoup4==4.14.3
 newspaper3k==0.2.8
 readability-lxml==0.8.4.1
-beautifulsoup4==4.14.3
-requests==2.32.5
 
-# Text processing
+# NLP
 nltk==3.9.2
 textblob==0.19.0
 textstat==0.7.12
@@ -21,8 +21,10 @@ rake-nltk==1.0.6
 matplotlib==3.10.8
 seaborn==0.13.2
 plotly==6.5.0
+
+# WordCloud (safe combo)
 wordcloud==1.8.2
-pillow<10.0   # 🔥 CRITICAL FIX
+pillow==9.5.0
 
 # Export
 openpyxl==3.1.5
