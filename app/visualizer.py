@@ -106,16 +106,22 @@ def personal_pronouns_barchart(df):
 # ----- EXTRA CHARTS FOR STREAMLIT -----
 
 def generate_wordcloud(keywords):
-    """ Generates a word cloud image using matplotlib. """
+    """Generates a word cloud image using matplotlib."""
     if not keywords:
         fig, ax = plt.subplots()
-        ax.text(0.5, 0.5, "No keywords available", ha="center", va="center")
+        ax.text(0.5, 0.5, "No keywords available",
+                ha="center", va="center")
         ax.axis("off")
         return fig
 
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(" ".join(keywords))
+    wc = WordCloud(
+        width=800,
+        height=400,
+        background_color="white"
+    ).generate(" ".join(keywords))
+
     fig, ax = plt.subplots(figsize=(10, 5))
-    ax.imshow(wordcloud.to_array(), interpolation='bilinear')
+    ax.imshow(wc)
     ax.axis("off")
     return fig
 
